@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 // import { getAuth, listUsers } from "firebase/auth";
 import { auth, db } from "../main";
 import {
@@ -10,9 +10,11 @@ import {
   where,
   query,
 } from "firebase/firestore";
+import { UserContext } from "./context/ContextProvider";
 
 export default function Users() {
   const collectionRef = collection(db, "usersDetails");
+  const {user, setUser} = useContext(UserContext)
 
   const [userList, setUserList] = useState([]);
   const listAllUsers = async () => {
@@ -40,19 +42,27 @@ export default function Users() {
 
   const handleUpdate = async (e , email) => {
     // ... validate updatedData using validateUpdateData if applicable
-    alert(email)
-    // const userRef = doc(collectionRef, "email" == email);
-    const q = query(collectionRef, where('email', '==', email));
+    // alert(email)
+ const q = query(collectionRef, where('email', '==', email));
     const querySnapshot = await getDocs(q);
     const userDoc = querySnapshot.docs[0]; // Assuming a single matching document
     const userRef = doc(db, 'usersDetails', userDoc.id);
     const value = e.target.value;
+ 
+
+    // const userRef = doc(collectionRef, "email" == email);
+   
     try {
-      await updateDoc(userRef, { active: value==="true"?true : false });
+      if(email === user?.email){
+        await updateDoc(userRef, { active: value==="true"?true : false });
       console.log('Document updated successfully!');
       // Optionally, update the local state to reflect the change:
       setIsActive(!isActive); // Toggle the state
       setSelectedValue(isActive ? 'Active' : 'Not Active');
+      }else{
+        alert("⚠ This is not your Accout")
+      }
+      
     } catch (error) {
       console.error('Error updating document:', error);
       // Handle errors gracefully, e.g., display an error message to the user
@@ -81,34 +91,13 @@ export default function Users() {
                 </th>
                 <th scope="col" className="px-6 py-3">
                   <div className="flex items-center">
-                    Category
-                    <a href="#">
-                      <svg
-                        className="w-3 h-3 ms-1.5"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                      </svg>
-                    </a>
+                    ID
+                   
                   </div>
                 </th>
                 <th scope="col" className="px-6 py-3">
                   <div className="flex items-center">
-                    Price
-                    <a href="#">
-                      <svg
-                        className="w-3 h-3 ms-1.5"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                      </svg>
-                    </a>
+                    ACTION
                   </div>
                 </th>
               </tr>
@@ -146,17 +135,21 @@ export default function Users() {
                       <select
                         id="countries"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        // defaultValue={doc._document.data.value.mapValue.fields.active.booleanValue ? "Active" : "Not Active"}
+                        // value={doc._document.data.value.mapValue.fields.active.booleanValue ? "Active" : "Not Active"}
                         onChange={(e)=>{handleUpdate(e ,doc._document.data.value.mapValue.fields.email.stringValue )}}
                       >
                         <option
                           value="true"
+                          // selected={doc._document.data.value.mapValue.fields.active
+                          //   .booleanValue}
                         >
                           {doc._document.data.value.mapValue.fields.active
                             .booleanValue ? "Active" : "Not Active"}
                         </option>
                         <option
                           value="false"
+                          // selected={!doc._document.data.value.mapValue.fields.active
+                          //   .booleanValue}
                         >
                           {doc._document.data.value.mapValue.fields.active
                             .booleanValue ? "Not Active" :"Active"}

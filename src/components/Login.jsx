@@ -75,14 +75,7 @@ else{
       // Handle errors accordingly
     }
   };
-//   useEffect(() => {
-//     if (db) {
-//         // Access db.collection safely here
-//         console.log("db=>>>> ", db.collection("usersDetails"));
-//       } else {
-//         console.error("Firestore not initialized yet.");
-//     }
-// }, [db]);
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -93,12 +86,24 @@ else{
   }, []);
 
   return (
-    <div>
+    <div className='h-[100vh] text-center mt-[50vh]'>
       {user ? (
-        <p>Logged in as {user.email}</p>
+      null
       ) : (
-        <button onClick={handleGoogleSignIn}>Sign in with Google</button>
-      )}
+        <>
+         <button
+        id="my-sign-in-button"
+        className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+        onClick={() => {
+          handleGoogleSignIn()
+        }}
+      >
+        Sign in with Google
+      </button>
+        
+      
+        </>
+        )}
     </div>
   );
 };

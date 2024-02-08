@@ -13,7 +13,7 @@ function Nav() {
   const handleLogout = async () => {
     await auth.signOut();
     setUser(null); // Clear user state
-    window.location.reload();
+    // window.location.reload();
   };
   return (
     <nav className="bg-gray-800 py-4">
